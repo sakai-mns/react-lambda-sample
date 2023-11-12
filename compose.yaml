@@ -1,0 +1,21 @@
+services:
+  backend:
+    build: ./docker/lambda-backend
+    container_name: lambda-backend
+    environment:
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    volumes:
+      - $PWD:$PWD
+      - /var/run/docker.sock:/var/run/docker.sock
+    working_dir: $PWD/lambda-backend
+    command: ['/bin/bash', "$PWD/docker/lambda-backend/entrypoint.sh"]
+    ports:
+      - 3000:3001
+    networks:
+      - backend
+    tty: true
+
+networks:
+  backend:
+    name: backend_network
+    driver: bridge
