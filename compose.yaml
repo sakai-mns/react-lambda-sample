@@ -14,6 +14,18 @@ services:
     networks:
       - backend
     tty: true
+  
+  frontend:
+    build: ./docker/react-frontend
+    container_name: react-frontend
+    volumes:
+      - ./react-frontend:/react-frontend
+      - ./docker/react-frontend:/docker/react-frontend
+    working_dir: /react-frontend
+    command: ['/bin/bash', "/docker/react-frontend/entrypoint.sh"]
+    ports:
+      - 5173:5173
+    tty: true
 
 networks:
   backend:
