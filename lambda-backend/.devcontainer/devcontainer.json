@@ -3,6 +3,7 @@
     "dockerComposeFile": ["../../compose.yaml/", "./compose.yaml"],
     "service": "backend",
 	"workspaceFolder": "${localWorkspaceFolder}",
+	"runServices": ["backend"],
 	"shutdownAction":"none",
 	"customizations": {
 		"vscode": {
