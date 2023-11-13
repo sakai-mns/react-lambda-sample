@@ -5,12 +5,14 @@ services:
     environment:
       - DOCKER_HOST=unix:///var/run/docker.sock
     volumes:
+      # カレントディレクトリをマウント。samを使用する場合は、ホストとコンテナ内のディレクトリ構造を一致させる必要があるらしい
       - $PWD:$PWD
+      # コンテナ内でdockerを使用できるようにするため、/var/run/docker.sockをマウント
       - /var/run/docker.sock:/var/run/docker.sock
     working_dir: $PWD/lambda-backend
     command: ['/bin/bash', "$PWD/docker/lambda-backend/entrypoint.sh"]
     ports:
-      - 3000:3001
+      - 13000:3001
     networks:
       - backend
     tty: true
@@ -19,12 +21,12 @@ services:
     build: ./docker/react-frontend
     container_name: react-frontend
     volumes:
-      - ./react-frontend:/react-frontend
+      - .:/prj-root
       - ./docker/react-frontend:/docker/react-frontend
-    working_dir: /react-frontend
+    working_dir: /prj-root/react-frontend
     command: ['/bin/bash', "/docker/react-frontend/entrypoint.sh"]
     ports:
-      - 5173:5173
+      - 15173:5173
     tty: true
 
 networks:
