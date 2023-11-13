@@ -4,6 +4,7 @@
     "service": "frontend",
 	"workspaceFolder": "/prj-root/react-frontend",
 	"shutdownAction":"none",
+	"runServices": ["frontend"],
 	"customizations": {
 		"vscode": {
 			"extensions": [
