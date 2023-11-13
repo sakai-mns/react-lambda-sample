@@ -1,0 +1,6 @@
+services:
+  backend:
+    volumes:
+      - $PWD/../:$PWD/../
+    working_dir: $PWD
+    command: ['/bin/bash', "$PWD/../docker/lambda-backend/entrypoint.sh"]
