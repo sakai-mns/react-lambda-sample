@@ -15,7 +15,36 @@ services:
       - 13000:3001
     networks:
       - backend
+    depends_on:
+      # コンテナ間の依存関係を記述
+      # databaseのコンテナ起動後にbackendを起動する。
+      # ここではdatabaseコンテナが先に起動するが、databaseコンテナの起動に失敗した場合や、DBアクセスが可能になるまで待機する等は考慮しない。
+      # depends_onは起動順を制御するだけなので、厳密に行うならhealthcheckなどを利用する。
+      - database
     tty: true
+  
+  database:
+    image: postgres:15-bullseye
+    container_name: postgres-db
+    volumes:
+      - ./database/data:/var/lib/postgresql/data
+      # database/initdb にDB初期化の*.sql, *shファイルを格納する。テーブル作成のDDL文や初期データのINSERT文など
+      # コンテナ内の /docker-entrypoint-initdb.d 内に配置したスクリプトがコンテナ作成時に実行される。
+      # 詳細は https://hub.docker.com/_/postgres
+      - ./database/initdb:/docker-entrypoint-initdb.d
+    ports:
+      - 15432:5432
+    environment:
+      # [TODO]
+      # DBのユーザー名、パスワードなどを別ファイルから読み込むように変更する。
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=postgres
+      - POSTGRES_INITDB_ARGS="--encoding=UTF-8"
+    user: root
+    networks:
+      # lambda-backendコンテナからDBアクセスを行うため、networkを共有する。
+      - backend
   
   frontend:
     build: ./docker/react-frontend
