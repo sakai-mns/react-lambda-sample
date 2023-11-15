@@ -2,6 +2,7 @@ services:
   # [TODO]
   # backend, frontendのコンテナ内からgitリモートリポジトリに接続できるようにしたい。
   # 開発はコンテナ内で行うので、コンテナ内からpush,fetch,pullなどのgitコマンドを実行できるようにしたい。
+  # 可能なら、git configなど設定コマンドを手動で実行することも無くす。ホストOSの.git/configや.gitconfigをコピーorマウントすればいい？（未調査）
   backend:
     build: ./docker/lambda-backend
     container_name: lambda-backend
@@ -22,7 +23,7 @@ services:
       # コンテナ間の依存関係を記述
       # databaseのコンテナ起動後にbackendを起動する。
       # ここではdatabaseコンテナが先に起動するが、databaseコンテナの起動に失敗した場合や、DBアクセスが可能になるまで待機する等は考慮しない。
-      # depends_onは起動順を制御するだけなので、厳密に行うならhealthcheckなどを利用する。
+      # depends_onは起動順を制御するだけなので、厳密に行うならhealthcheckを利用する。
       - database
       - minio
     tty: true
@@ -76,6 +77,9 @@ services:
     build: ./docker/react-frontend
     container_name: react-frontend
     volumes:
+      # [TODO]
+      # node_modulesをマウントしないように修正する。
+      # node_modulesにはOSや環境依存のライブラリなどもあるので、ホストOSから編集可能なのはNG
       - .:/prj-root
       - ./docker/react-frontend:/docker/react-frontend
     working_dir: /prj-root/react-frontend
