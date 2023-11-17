@@ -73,6 +73,23 @@ services:
       # lambda-backendコンテナからアクセスするため、networkを共有する。
       - backend
   
+  cognito-local:
+    # Cognitoのモックサーバー
+    # https://github.com/jagregory/cognito-local
+    # AWS公式ではないので、注意
+    # ユーザープール作成、ユーザープールクライアント作成、ユーザー作成、パスワードの設定、認証とトークン発行など基本的な機能はある模様
+    # Lambdaトリガーの設定も可能
+    # トークン生成後のトリガーもあるので、JWTに任意のプロパティを埋め込むこともできる。
+    # ただし、Cognitoの全機能を再現しているわけではないため、利用可能な機能については上記URLで確認する。
+    # API呼び出し時の認証を自作したい場合は Lambdaオーソライザー を利用する。
+    # 参考：https://docs.aws.amazon.com/ja_jp/serverless-application-model/latest/developerguide/using-sam-cli-local-start-api.html
+    image: jagregory/cognito-local:latest
+    container_name: cognito-local
+    ports:
+      - 19229:9229
+    volumes:
+      - ./.cognito:/app/.cognito
+
   frontend:
     build: ./docker/react-frontend
     container_name: react-frontend
