@@ -28,6 +28,29 @@ services:
       - minio
     tty: true
   
+  lambda:
+    # REST API以外のlambda関数のエンドポイント
+    # minioやcognitoのトリガーを使う場合は、こちらを呼び出すことになるはず
+    # [TODO]
+    # できればbackendと統一したい
+    build: ./docker/lambda-backend
+    container_name: lambda-endpoint
+    environment:
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    volumes:
+      - $PWD:$PWD
+      - /var/run/docker.sock:/var/run/docker.sock
+    working_dir: $PWD/lambda-backend
+    command: ['/bin/bash', "$PWD/docker/lambda-backend/lambda_entrypoint.sh"]
+    ports:
+      - 13001:3001
+    networks:
+      - backend
+    depends_on:
+      - database
+      - minio
+    tty: true
+  
   database:
     image: postgres:15-bullseye
     container_name: postgres-db
@@ -64,6 +87,8 @@ services:
       - MINIO_ROOT_USER=minio
       - MINIO_ROOT_PASSWORD=minio123
     command: server /data --address :9000 --console-address :9001
+    depends_on:
+      - lambda
     volumes:
       # Bucketという単位でファイルを管理する。フォルダのようなイメージでいいはず。
       # ./minio 直下のディレクトリが初期Bucketとして作成される。
@@ -85,6 +110,8 @@ services:
     # 参考：https://docs.aws.amazon.com/ja_jp/serverless-application-model/latest/developerguide/using-sam-cli-local-start-api.html
     image: jagregory/cognito-local:latest
     container_name: cognito-local
+    depends_on:
+      - lambda
     ports:
       - 19229:9229
     volumes:

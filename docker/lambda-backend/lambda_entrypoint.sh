@@ -1,0 +1,1 @@
+sam local start-lambda -p 3001 --host 0.0.0.0 --docker-network backend_network --container-host host.docker.internal
