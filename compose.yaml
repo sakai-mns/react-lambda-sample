@@ -87,8 +87,6 @@ services:
       - MINIO_ROOT_USER=minio
       - MINIO_ROOT_PASSWORD=minio123
     command: server /data --address :9000 --console-address :9001
-    depends_on:
-      - lambda
     volumes:
       # Bucketという単位でファイルを管理する。フォルダのようなイメージでいいはず。
       # ./minio 直下のディレクトリが初期Bucketとして作成される。
